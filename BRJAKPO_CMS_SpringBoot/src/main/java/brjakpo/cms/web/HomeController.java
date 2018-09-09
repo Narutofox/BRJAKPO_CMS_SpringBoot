@@ -120,16 +120,14 @@ public class HomeController {
 
     @PostMapping(value = "/newPagePost")
     @Transactional
-    public @ResponseBody
-    void NewPagePost(String postContent, int pageId, HttpServletRequest request) {
+    public @ResponseBody void NewPagePost(String postContent, int pageId, HttpServletRequest request) {
         LoginUser loginUser = (LoginUser) request.getSession().getAttribute("loginUser");
         Post newPost = new Post(pageId, loginUser.getId(), postContent);
         postRepo.save(newPost);
     }
 
     @PostMapping(value = "/deletePost", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @Transactional
-    public @ResponseBody int deletePost(int postId, HttpServletRequest request) {
+    @Transactional public @ResponseBody int deletePost(int postId, HttpServletRequest request) {
         LoginUser loginUser = (LoginUser) request.getSession().getAttribute("loginUser");
         Post post = postRepo.getOne(postId);
 
