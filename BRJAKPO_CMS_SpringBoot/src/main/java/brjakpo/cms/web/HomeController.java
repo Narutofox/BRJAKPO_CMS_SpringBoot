@@ -74,8 +74,7 @@ public class HomeController {
     }
 
     @GetMapping(value = "/getSubMenus", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public @ResponseBody
-    List<MenuVM> getSubMenus(int menuId) {
+    public @ResponseBody List<MenuVM> getSubMenus(int menuId) {
         List<Menu> subMenus = menuRepo.findByParentId(menuId);
         List<MenuVM> subMenusVMs = new ArrayList<>();
         for (Menu menu : subMenus) {
@@ -92,14 +91,13 @@ public class HomeController {
         List<Page> pages = pageRepo.findByMenuId(menuId);
         List<PageVM> pageVMs = new ArrayList<>();
         for (Page page : pages) {
-            pageVMs.add(new PageVM(page.getPageId(), page.getName()));
+            pageVMs.add(new PageVM(page.getPageId(), page.getTitle()));
         }
         return pageVMs;
     }
 
     @GetMapping(value = "/pageDetails", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public @ResponseBody
-    Page pageDetails(Model model, int pageId) {
+    public @ResponseBody Page pageDetails(int pageId) {
         Page page = pageRepo.getOne(pageId);
         return page;
     }

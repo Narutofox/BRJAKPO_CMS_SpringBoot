@@ -60,7 +60,7 @@ public class PageController {
         if (page.getMenuId() <= 0) {
             request.getSession().setAttribute("notification", new Notification("Izbornika mora biti odabran",
                     Notification.NotificationStatus.Error));
-        } else if (page.getName() == null || page.getName().isEmpty()) {
+        } else if (page.getTitle()== null || page.getTitle().isEmpty()) {
             request.getSession().setAttribute("notification", new Notification("Naslov stranice mora biti popunjen",
                     Notification.NotificationStatus.Error));
         } else {

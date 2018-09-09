@@ -5,32 +5,28 @@
  */
 package brjakpo.cms;
 
-import brjakpo.cms.config.JpaConfig;
 import brjakpo.cms.db.MenuRepo;
 import brjakpo.cms.db.PageRepo;
 import brjakpo.cms.db.PostRepo;
 import brjakpo.cms.db.UserRepo;
+import brjakpo.cms.model.Page;
 import brjakpo.cms.web.HomeController;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import org.junit.Before;
+import com.google.gson.Gson;
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 
 @RunWith(SpringRunner.class)
@@ -64,11 +60,36 @@ public class HomeControllerTests
                  .andExpect(model().attributeExists("mainMenus"));
     }
     
-//    @Autowired
-//    private HomeController controller;
-//    
-//    @Test
-//    public void contexLoads() throws Exception {
-//        assertThat(controller).isNotNull();
-//    }
+    @Test
+    public void getSubMenus() throws Exception {       
+         this.mockMvc.perform(get("/home/getSubMenus/?menuId=1").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))               
+                .andExpect(status().isOk());
+    }
+    
+    @Test
+    public void getMenuPages() throws Exception {       
+         this.mockMvc.perform(get("/home/getMenuPages/?menuId=1").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))               
+                .andExpect(status().isOk());
+    }
+    
+        @Test
+    public void pageDetails() throws Exception {   
+        
+        Page found = new Page();
+        found.setPageId(1);
+        found.setContent("Lorem ipsum");
+        found.setTitle("Foo");
+        found.setAllowComments(false);
+        found.setMenuId(7);
+
+        when(pageRepo.getOne(1)).thenReturn(found);
+        
+        Gson gson = new Gson();
+        String json = gson.toJson(found);
+    
+         this.mockMvc.perform(get("/home/pageDetails/?pageId=1").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))               
+                .andExpect(status().isOk())
+                .andExpect(content().json(json));
+    }  
+    
 }
