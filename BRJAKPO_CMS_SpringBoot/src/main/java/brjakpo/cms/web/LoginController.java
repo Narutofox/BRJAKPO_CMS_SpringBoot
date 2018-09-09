@@ -11,7 +11,6 @@ import brjakpo.cms.model.LoginUser;
 import brjakpo.cms.model.Notification;
 import brjakpo.cms.model.User;
 import brjakpo.cms.model.UserRole;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
