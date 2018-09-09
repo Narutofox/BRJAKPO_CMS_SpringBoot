@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{/fragments/layout}">
+    <head>
+        <title>Prijava korisnika</title>
+    </head>
+    <body>         
+        <div class="container" layout:fragment="content">
+            <h1>Prijava korisnika</h1>
+            <div align="center">
+                <form name='f' th:action='@{/login/perform_login}' method='POST'>
+                    <table>
+                        <tr>
+                            <td>Korisničko ime:</td>
+                            <td>
+                                <input type='text' name='username' value='' autofocus autocomplete="off"></input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Lozinka:</td>
+                            <td>
+                                <input type='password' name='password' autocomplete="off"></input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan='2'>
+                                <input name="submit" type="submit" value="Prijava" class="btn btn-primary" ></input>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

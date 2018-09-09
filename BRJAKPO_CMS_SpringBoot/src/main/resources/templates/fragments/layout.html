@@ -1,0 +1,92 @@
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	 crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>    
+        <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js" integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E=" crossorigin="anonymous"></script>
+    </head>
+<body>
+  <header layout:fragment="header">
+   <div class="container">
+       <div class="page-header">
+    <nav class="navbar navbar-inverse navbar-fixed-top" th:fragment="header">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">CMS</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li th:if="${session.loginUser != null}">
+                    <a href="#" th:href="@{/home/index}">Početna stranica</a>
+                </li>
+                <li th:if="${session.loginUser != null and session.loginUser.role == 'ROLE_ADMIN'}">
+                    <a href="#" th:href="@{/mainMenu/index}">Glavni izbornici</a>
+                </li>
+                <li th:if="${session.loginUser != null and session.loginUser.role == 'ROLE_ADMIN'}">
+                    <a href="#" th:href="@{/subMenu/index}">Pod izbornici</a>
+                </li>
+                <li th:if="${session.loginUser != null and session.loginUser.role == 'ROLE_ADMIN'}">
+                    <a href="#" th:href="@{/page/index}">Nova stranica</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li th:if="${session.loginUser == null}">
+                    <a href="/login/index" th:href="@{/login/index}">
+                        <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp;Prijava
+                    </a>
+                </li>
+                <li th:if="${session.loginUser != null}">
+                    <a href="/login/logout" th:href="@{/login/logout}">
+                        <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>&nbsp;Odjava
+                    </a>            
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+    </nav>
+       </div>
+   </div>
+     <div id="notification" th:if="${notification != null}" th:class="${notification.cssClass} ?: ''">
+          <span th:text="${notification.text}"></span>
+     </div>
+  </header>
+    <div class="container" layout:fragment="content">
+      <p>Page content goes here layout</p>
+    </div>
+  <footer layout:fragment="footer">
+    <div th:fragment="footer" th:align="center">
+        <span>&copy; 2018 Ivan Čiček</span>
+    </div>
+  </footer>  
+</body>
+    <script th:if="${notification != null}">
+        $(function () {
+            var text = /*[[${notification.text}]]*/ '';
+
+            if (text.length <= 50) {
+                $("#notification").delay(3500).hide("blind", { direction: "up" }, 1500);
+            }
+            else if (text.length <= 100) {
+                $("#notification").delay(4500).hide("blind", { direction: "up" }, 1500);
+            }
+            else if (text.length > 100) {
+                $("#notification").delay(5500).hide("blind", { direction: "up" }, 2000);
+            }
+            else {
+                $("#notification").delay(2500).hide("blind", { direction: "up" }, 1500);
+
+            }
+        });
+    </script>
+</html>

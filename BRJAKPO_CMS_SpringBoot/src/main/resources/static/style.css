@@ -1,0 +1,28 @@
+.sidenav {
+     float: left;
+    min-height: 300px;
+    vertical-align: top;
+}
+
+.wrapper {
+    overflow: hidden /* add this to contain floated children */
+}
+
+
+.mainDiv {
+    margin-top: 1em;
+    padding-left: 1em;
+    margin-bottom: 1em;
+    min-height: 800px;
+    overflow: hidden;
+}
+
+@media (max-width:767px) {
+    .mainDiv {
+        margin-left: unset;
+    }
+}
+
+#page-options a{
+    text-decoration: none;
+}

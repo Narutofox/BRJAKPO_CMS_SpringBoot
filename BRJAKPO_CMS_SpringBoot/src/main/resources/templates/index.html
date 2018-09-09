@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+    <head>
+        <title>Home</title>
+        <link rel="stylesheet" type="text/css"  th:href="@{/style.css}">
+        <style>
+            .dropdown-submenu {
+                position: relative;
+            }
+
+            .dropdown-submenu .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -1px;
+            }
+        </style>
+        <script>
+            var baseUrl = window.location.protocol + "//" + window.location.host + "/" + window.location.pathname.split('/')[1];
+            $(function () {
+                $('.dropdown').on("click", ".dropdown-submenu a.test", function (e) {
+                    var ul = $(this).next('ul');
+                    if (ul == null || ul == undefined || ul.length == 0) {
+                        $(this).after("<ul class='dropdown-menu'></ul>");
+                        ul = $(this).next('ul');
+                    } else {
+                        ul.empty();
+                    }
+
+                    // Samo jedna izbornik na određenoj razini može biti otvorne u isto vrijeme 
+                    var parentDropdownMenu = $(this).parent().parent();
+                    var dropdownMenuChildren = parentDropdownMenu.children("li.dropdown-submenu").children("ul.dropdown-menu");
+                    dropdownMenuChildren.hide();
+
+                    SetSubMenus($(this).parent(), ul);
+                    SetPages($(this).parent(),ul);
+
+                    ul.toggle();
+                    ClearIfEmpty(parentDropdownMenu);
+
+
+                    e.stopPropagation();
+                    e.preventDefault();
+                });
+
+                $('.dropdown-toggle').on("click", function (e) {
+                    var ul = $(this).next('ul');
+                    if (ul == null || ul == undefined || ul.length == 0) {
+                        $(this).append("<ul class='dropdown-menu'></ul>")
+                    } else {
+                        ul.empty();
+                    }
+                    SetSubMenus(this);
+                    SetPages(this);
+                    ClearIfEmpty(this);
+                });
+                
+                $("#btnSaveNewComment").click(function (){
+                    var postContent =  $("#newPostContent").val();
+                    var pageId =  $("#pageId").val();
+                    $.ajax({
+                        url: "newPagePost",
+                        data: {pageId: pageId, postContent: postContent},
+                        method : "POST"
+                    })
+                    .done(function () {
+                        ShowPagePosts(pageId);
+                        $("#newPostContent").val("");
+                    })
+                    .fail(function (xhr, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    });
+                });
+
+                $(".dropdown").on("click", 'a.page', function (e) {
+                    var pageId = $(this).data("pageid");
+                    $.ajax({
+                        url: "pageDetails",
+                        data: {pageId: pageId},
+                        dataType: "json"
+                    })
+                            .done(function (result) {
+                                if ($("#page-options").length > 0) {
+                                    $("#page-edit").attr("href", baseUrl+"/page/index?pageId="+pageId);
+                                    $("#page-delete").attr("href", baseUrl+"/page/delete?pageId="+pageId);
+                                    $("#page-options").show();
+                                }
+                                
+                                if (result.allowComments) {
+                                    $("#pageId").val(pageId);
+                                    $("#newPost").show();
+                                }
+                                else{
+                                    $("#pageId").val(0);
+                                    $("#newPost").hide();
+                                }
+                                
+                                $('#page-content').html(result.content);
+                                ShowPagePosts(pageId);
+                            })
+                            .fail(function (xhr, textStatus, errorThrown) {
+                                alert(errorThrown);
+                            });
+                });                             
+            });
+            
+            function DeletePost(postId){               
+                   $.ajax({
+                        url: "deletePost",
+                        data: {postId: postId},
+                        method: "POST",
+                        dataType: "json"
+                    })
+                    .done(function (pageId) {
+                        ShowPagePosts(pageId);
+                    })
+                    .fail(function (xhr, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    });
+            }
+
+            function ShowPagePosts(pageId) {
+                 $.ajax({
+                        url: "pagePosts",
+                        data: {pageId: pageId},
+                        dataType: "json"
+                    })
+                    .done(function (posts) {                     
+                           $("#page-posts").empty();
+                            $.map(posts, function (post) {                             
+                                var mainDiv = "<div class='panel panel-primary'>";
+                                var divHeader = "<div class='panel-heading'> <span>" + post.ime + " " + post.prezime + "</span></div>" ;
+                                var divBody = "<div class='panel-body'>" + post.content + "</div>" ;
+                                var footerDiv = "";
+                                if (post.canDelete) {         
+                                    var deleteButton ="<div onclick='DeletePost(" +post.postId +")'  class='btn btn-danger post-delete'><a style='color:white' href='javascript:void(0)'>Obriši</a></div>";
+                                    footerDiv = "<div class='panel-footer' >" + deleteButton + "</div>";
+                                }
+                                
+                                var div = mainDiv + divHeader + divBody + footerDiv + "</div>";
+                                $("#page-posts").append(div);
+                          });
+                    })
+                    .fail(function (xhr, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    });    
+            }
+            
+            function SetPages(element, ul) {
+                var menuId = $(element).data("el_id");
+                if (ul == null || ul == undefined) {
+                    ul = $(element).parent().children('ul.dropdown-menu')[0];
+                }
+                                           
+                $.ajax({
+                    async: false,
+                    url: "getMenuPages",
+                    data: {menuId: menuId},
+                    dataType: "json"
+                })
+                        .done(function (result) {
+                             if ((ul == null || ul == undefined || ul.length == 0) && result.length > 0) 
+                                {
+                                    $(element).append("<ul class='dropdown-menu'></ul>");
+                                    ul = $(element).children('ul.dropdown-menu')[0];
+                                }
+                            $.map(result, function (item) {
+                                var a = '<a tabindex="-1" data-pageId="' + item.pageId + '" href="#" class="page">' + item.title + '</a>';
+                                $(ul).append('<li>' + a + '</li>');
+                            });
+                        })
+                        .fail(function (xhr, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        });
+            }
+
+            function SetSubMenus(element, ul) {
+                var menuId = $(element).data("el_id");
+                if (ul == null || ul == undefined) {
+                    ul = $(element).next('ul');
+                }
+                $.ajax({
+                    async: false,
+                    url: "getSubMenus",
+                    data: {menuId: menuId},
+                    dataType: "json"
+                })
+                        .done(function (result) {
+                            $.map(result, function (item) {
+                                ul.append("<li class='dropdown-submenu' data-el_id='" + item.menuId + "'><a class='test' tabindex='-1' href='#'>" + item.name + "<span class='caret'></span></a></li>");
+                            });
+
+                        })
+                        .fail(function (xhr, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        });
+            }
+
+            function ClearIfEmpty(parentDropdownMenu) {
+                // ako izbornik nema pod elemenata sakrij pod izbornik
+                var dropdownMenuChildren = null;
+                var children = $(parentDropdownMenu).children("li.dropdown-submenu");
+                if (children !== null && children !== undefined && children.length > 0)
+                {
+                    dropdownMenuChildren = $(parentDropdownMenu).children("li.dropdown-submenu").children("ul.dropdown-menu");
+                } else {
+                    dropdownMenuChildren = $(parentDropdownMenu).next('ul.dropdown-menu');
+                }
+                for (var i = 0; i < dropdownMenuChildren.length; i++) {
+                    if ($(dropdownMenuChildren[i]).children().length === 0) {
+                        $(dropdownMenuChildren[i]).hide();
+                    }
+                }
+            }
+        </script>
+
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="wrapper">
+                <div class="sidenav" id="menus" >
+                    <div class="dropdown" th:each="menu : ${mainMenus}">
+                        <button class="btn btn-default dropdown-toggle" th:attr="data-el_id=${menu.menuId}" type="button" data-toggle="dropdown">
+                            <span th:text="${menu.name}"></span>           
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a tabindex="-1" href="#" onclick="">HTML</a></li>
+                            <li><a tabindex="-1" href="#">CSS</a></li>
+                            <li class="dropdown-submenu">
+                                <a class="test" tabindex="-1" href="#">New dropdown <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a tabindex="-1" href="#">2nd level dropdown</a></li>
+                                    <li><a tabindex="-1" href="#">2nd level dropdown</a></li>
+                                    <li class="dropdown-submenu">
+                                        <a class="test" href="#">Another dropdown <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">3rd level dropdown</a></li>
+                                            <li><a href="#">3rd level dropdown</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mainDiv" id="content" >
+                    <div id="page-options" th:if="${session.loginUser != null and session.loginUser.role == 'ROLE_ADMIN'}" style="display: none">
+                         <div class="btn btn-primary">
+                            <a style="color:white" id="page-edit" href="">Uredi</a> 
+                        </div>
+                        <div class="btn btn-danger">
+                            <a style="color:white" href="" id="page-delete">Obriši</a> 
+                        </div>
+                    </div>
+                    <div id="page-content">
+
+                    </div>
+                    <div id="page-posts"></div>
+                    <div id="newPost" style="display: none">
+                        <input type="hidden" id="pageId">
+                        <textarea class="form-control" rows="5" id="newPostContent"></textarea>
+                        <button type="button" id="btnSaveNewComment" class="btn btn-primary">Spremi novi komentar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,51 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
+    <head>
+        <title>Glavni izbornici</title>
+        <style>
+            .wrapper {
+                width: 500px;
+                overflow: hidden; /* will contain if #first is longer than #second */
+            }
+            .first {
+                width: 300px;
+                float:left; /* add this */
+            }
+            .second {
+                overflow: hidden; /* if you don't want #second to wrap below #first */
+                padding-left: 1rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container" layout:fragment="content">
+            <h2>Novi glavni izbornik</h2>
+            <form th:action='@{/mainMenu/createOrUpdate}' method='POST'>
+                <div class="form-group">
+                    <label>Naziv</label>
+                    <input type="text" class="form-control" name="name" autocomplete="off" required="required">                   
+                </div>
+                <button type="submit" class="btn btn-primary">Spremi</button>
+            </form>
+            <hr/>
+            <div>
+                <div th:each="menu : ${mainMenus}" class="col-md-12 ">
+                    <form th:action='@{/mainMenu/createOrUpdate}' method='POST'>
+                        <input type="hidden" th:value="${menu.menuId}" name='menuId'>
+                            <div class="wrapper">
+                                <div class="first">
+                                     <input class="form-control" type="text" th:value="${menu.name}" name ="name" autocomplete="off" required="required">                                    
+                                </div> 
+                            <div class="second">
+                                <button type="submit" class="btn btn-primary">Uredi</button>
+                                <div class="btn btn-danger">
+                                    <a style="color:white" href="" th:href="@{'/mainMenu/delete?menuId=' + ${menu.menuId}}">Obriši</a> 
+                                </div>
+                            </div>
+                         </div>                           
+                    </form>
+                    <br/>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
