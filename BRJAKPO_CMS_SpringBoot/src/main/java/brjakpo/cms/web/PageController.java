@@ -83,7 +83,6 @@ public class PageController {
         pageRepo.deleteById(pageId);
         request.getSession().setAttribute("notification", new Notification("Stranica je uspješno obrisana",
                 Notification.NotificationStatus.Success));
-        //return "redirect:/home/index";
         return new ModelAndView("redirect:/home/index");
     }
 
