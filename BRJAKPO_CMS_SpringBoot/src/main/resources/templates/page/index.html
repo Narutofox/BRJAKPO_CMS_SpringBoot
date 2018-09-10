@@ -47,7 +47,7 @@
                     </div> 
                      <div class="form-group">
                         <label for="allowComments">Dozvoli komentiranje
-                            <input class="form-control" id="allowComments"  name="allowComments" type="checkbox" th:value="${pageEdit != null ? pageEdit.allowComments : false}"/>
+                            <input class="form-control" id="allowComments"  name="allowComments" type="checkbox" th:value="${pageEdit != null ? pageEdit.allowComments : false}" th:checked="${pageEdit != null ? pageEdit.allowComments : false}"/>
                         </label>
                     </div> 
                     <button type="submit" class="btn btn-primary">Spremi</button>

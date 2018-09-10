@@ -38,19 +38,18 @@ public class AdminFilter implements Filter {
             request.getSession().getServletContext()
                     .setAttribute("notification", new Notification("Za pristup sadržaju molimo prijavite se.",
                             Notification.NotificationStatus.Error));
-            response.sendRedirect(request.getContextPath() + "/login/index");            
-        }
-        else if (!UserRoles.ROLE_ADMIN.toString().equals(loginUser.getRole())) {
+            response.sendRedirect(request.getContextPath() + "/login/index");
+        } else if (!UserRoles.ROLE_ADMIN.toString().equals(loginUser.getRole())) {
             request.getSession().getServletContext()
                     .setAttribute("notification", new Notification("Nemate potrebna prava za pristup traženom sadržaju.",
                             Notification.NotificationStatus.Error));
-             response.sendRedirect(request.getContextPath() + "/home/index");            
-        }
-
-        try {
-            fc.doFilter(request, response);
-        } catch (Throwable ex) {
-            ex.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/home/index");
+        } else {
+            try {
+                fc.doFilter(request, response);
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+            }
         }
     }
 

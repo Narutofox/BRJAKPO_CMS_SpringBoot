@@ -164,15 +164,29 @@ public class PageControllerTests {
     
     @Test
     public void delete() throws Exception {
-        Notification notification = new Notification("Stranica je uspješno obrisana", Notification.NotificationStatus.Success);
+        Notification notificationSuccess = new Notification("Stranica je uspješno obrisana", Notification.NotificationStatus.Success);
         
         Page page = new Page();
         page.setPageId(2);
-        
+        when(pageRepo.existsById(page.getPageId())).thenReturn(true);
         this.mockMvc.perform(get("/page/delete").param("pageId",  String.valueOf(page.getPageId())))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(request().sessionAttribute("notification", hasProperty("cssClass", is(notification.getCssClass()))))
-                .andExpect(request().sessionAttribute("notification", hasProperty("text", is(notification.getText()))))
+                .andExpect(request().sessionAttribute("notification", hasProperty("cssClass", is(notificationSuccess.getCssClass()))))
+                .andExpect(request().sessionAttribute("notification", hasProperty("text", is(notificationSuccess.getText()))))
+                .andExpect(view().name("redirect:/home/index"));
+    }
+    
+    @Test
+    public void delete_failed() throws Exception {
+        Notification notificationError = new Notification("Stranica ne postoji", Notification.NotificationStatus.Error);
+        
+        Page page = new Page();
+        page.setPageId(2);
+        when(pageRepo.existsById(page.getPageId())).thenReturn(false);
+        this.mockMvc.perform(get("/page/delete").param("pageId",  String.valueOf(page.getPageId())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(request().sessionAttribute("notification", hasProperty("cssClass", is(notificationError.getCssClass()))))
+                .andExpect(request().sessionAttribute("notification", hasProperty("text", is(notificationError.getText()))))
                 .andExpect(view().name("redirect:/home/index"));
     }
 }

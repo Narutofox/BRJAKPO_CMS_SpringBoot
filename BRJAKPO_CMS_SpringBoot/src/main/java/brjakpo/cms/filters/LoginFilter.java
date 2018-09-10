@@ -21,8 +21,9 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Naruto
  */
-public class LoginFilter implements Filter{
-     @Override
+public class LoginFilter implements Filter {
+
+    @Override
     public void init(FilterConfig fc) throws ServletException {
     }
 
@@ -36,14 +37,15 @@ public class LoginFilter implements Filter{
             request.getSession().getServletContext()
                     .setAttribute("notification", new Notification("Za pristup sadržaju molimo prijavite se.",
                             Notification.NotificationStatus.Error));
-            response.sendRedirect(request.getContextPath() + "/login/index");            
+            response.sendRedirect(request.getContextPath() + "/login/index");
+        } else {
+            try {
+                fc.doFilter(request, response);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         }
 
-        try {
-            fc.doFilter(request, response);
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
     }
 
     @Override

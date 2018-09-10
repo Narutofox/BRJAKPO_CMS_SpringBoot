@@ -15,6 +15,7 @@ import brjakpo.cms.model.Post;
 import brjakpo.cms.model.UserRole;
 import brjakpo.cms.web.HomeController;
 import com.google.gson.Gson;
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.mockito.Mockito.when;
@@ -81,8 +82,9 @@ public class HomeControllerTests
         found.setTitle("Foo");
         found.setAllowComments(false);
         found.setMenuId(7);
-
-        when(pageRepo.getOne(found.getPageId())).thenReturn(found);
+        pageRepo.save(found);
+        
+        when(pageRepo.findById(found.getPageId())).thenReturn(Optional.of(found));
         
         Gson gson = new Gson();
         String json = gson.toJson(found);

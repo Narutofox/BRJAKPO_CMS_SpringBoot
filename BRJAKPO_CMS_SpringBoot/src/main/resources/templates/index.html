@@ -15,7 +15,7 @@
             }
         </style>
         <script>
-            var baseUrl = window.location.protocol + "//" + window.location.host + "/" + window.location.pathname.split('/')[1];
+            var baseUrl = window.location.protocol + "//" + window.location.host + "/";
             $(function () {
                 $('.dropdown').on("click", ".dropdown-submenu a.test", function (e) {
                     var ul = $(this).next('ul');
@@ -80,8 +80,8 @@
                     })
                             .done(function (result) {
                                 if ($("#page-options").length > 0) {
-                                    $("#page-edit").attr("href", baseUrl+"/page/index?pageId="+pageId);
-                                    $("#page-delete").attr("href", baseUrl+"/page/delete?pageId="+pageId);
+                                    $("#page-edit").attr("href", baseUrl+"page/index?pageId="+pageId);
+                                    $("#page-delete").attr("href", baseUrl+"page/delete?pageId="+pageId);
                                     $("#page-options").show();
                                 }
                                 

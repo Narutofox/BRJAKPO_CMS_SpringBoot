@@ -54,7 +54,7 @@ public class HomeController {
     @GetMapping("/index")
     public String index(Model model, HttpServletRequest request) {
         List<Menu> mainMenus = menuRepo.findByParentIdIsNull();
-        List<MenuVM> mainMenusVMs = new ArrayList<MenuVM>();
+        List<MenuVM> mainMenusVMs = new ArrayList<>();
         for (Menu menu : mainMenus) {
             mainMenusVMs.add(
                     new MenuVM(menu.getMenuId(), menu.getName(), menu.getParentId(), menuRepo.hasSubMenus(menu.getMenuId()))
@@ -98,7 +98,7 @@ public class HomeController {
 
     @GetMapping(value = "/pageDetails", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public @ResponseBody Page pageDetails(int pageId) {
-        Page page = pageRepo.getOne(pageId);
+        Page page = pageRepo.findById(pageId).get();
         return page;
     }
 

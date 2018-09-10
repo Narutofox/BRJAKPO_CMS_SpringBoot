@@ -79,11 +79,17 @@ public class PageController {
     }
 
     @GetMapping("/delete")
-    public ModelAndView Delete(int pageId, HttpServletRequest request) {
-        pageRepo.deleteById(pageId);
-        request.getSession().setAttribute("notification", new Notification("Stranica je uspješno obrisana",
+    public String Delete(int pageId, HttpServletRequest request) {
+        if (pageRepo.existsById(pageId)) {
+            pageRepo.deleteById(pageId);
+            request.getSession().setAttribute("notification", new Notification("Stranica je uspješno obrisana",
                 Notification.NotificationStatus.Success));
-        return new ModelAndView("redirect:/home/index");
+        }
+        else{
+            request.getSession().setAttribute("notification", new Notification("Stranica ne postoji",
+                Notification.NotificationStatus.Error));
+        }
+        return "redirect:/home/index";
     }
 
 }
