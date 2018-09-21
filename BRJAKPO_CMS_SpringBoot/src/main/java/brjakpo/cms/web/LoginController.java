@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.support.SessionAttributeStore;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.context.request.WebRequest;
 
 /**
  *
@@ -64,8 +67,13 @@ public class LoginController {
     }
 
     @GetMapping("/logout")
-    public String logout(Model model,HttpServletRequest request) {
-        request.getSession().setAttribute("LoginUser", null);
+    public String logout(Model model,HttpServletRequest request, SessionStatus status) {
+        status.setComplete();
+        request.getSession().getServletContext().setAttribute("LoginUser",null);
+        request.getSession().setAttribute("LoginUser",null);
+        request.getSession().getServletContext().setAttribute("LoginUser",null);
+        request.getSession().removeAttribute("LoginUser");
+        request.getSession().getServletContext().removeAttribute("LoginUser");
         model.addAttribute("notification", new Notification("Uspješna odjava", Notification.NotificationStatus.Success));
         return "login";
     }
